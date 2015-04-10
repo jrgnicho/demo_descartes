@@ -5,7 +5,9 @@ project(plan_and_run)
 find_package(catkin REQUIRED COMPONENTS
   descartes_core
   descartes_planner
+  descartes_moveit
   moveit_msgs
+  moveit_ros_planning_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -30,12 +32,14 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(plan_and_run
-#   src/${PROJECT_NAME}/plan_and_run.cpp
-# )
+ add_library(${PROJECT_NAME}
+   src/demo_application.cpp
+)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Declare a cpp executable
-# add_executable(plan_and_run_node src/plan_and_run_node.cpp)
+add_executable(plan_and_run_node src/plan_and_run_node.cpp)
+target_link_libraries(plan_and_run_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

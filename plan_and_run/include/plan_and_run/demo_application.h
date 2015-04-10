@@ -10,6 +10,7 @@
 
 #include <ros/ros.h>
 #include <moveit_msgs/ExecuteKnownTrajectory.h>
+#include <moveit/move_group_interface/move_group.h>
 #include <descartes_moveit/moveit_state_adapter.h>
 #include <descartes_trajectory/axial_symmetric_pt.h>
 #include <descartes_trajectory/cart_trajectory_pt.h>
@@ -21,6 +22,7 @@ namespace plan_and_run
 const std::string ROBOT_DESCRIPTION_PARAM = "robot_description";
 const std::string EXECUTE_TRAJECTORY_SERVICE = "/execute_kinematic_path";
 const double SERVICE_TIMEOUT = 5.0f; // seconds
+const double EPSILON = 0.0001f;
 
 typedef std::vector<descartes_core::TrajectoryPtPtr> DescartesTrajectory;
 
@@ -31,7 +33,14 @@ struct DemoConfiguration
   std::string base_link;
   std::string world_frame;
   std::vector<std::string> joint_names;
+
+  // trajectory generation
   double time_delay;
+  double foci_distance;
+  double radius;
+  int num_points;
+  int num_lemniscates;
+  std::vector<double> center;
 };
 
 class DemoApplication
@@ -47,8 +56,12 @@ public:
   void planPath(const DescartesTrajectory& input_traj,DescartesTrajectory& output_path);
   void runPath(const DescartesTrajectory& path);
 
-  static void fromDescartesToMoveitTrajectory(const DescartesTrajectory& in_traj,
+
+protected:
+
+  void fromDescartesToMoveitTrajectory(const DescartesTrajectory& in_traj,
                                               trajectory_msgs::JointTrajectory& out_traj);
+  static descartes_core::TrajectoryPtPtr makeCartesianPoint(const Eigen::Affine3d& pose);
 
 protected:
 
