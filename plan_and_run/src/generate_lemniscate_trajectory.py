@@ -12,7 +12,7 @@ def generateLemniscatePoints():
     fig = pyplot.figure()
     ax = fig.add_subplot(111,projection='3d')
 
-    a = 3.8
+    a = 6.0
     ro = 4.0
     dtheta = 0.1
     nsamples = 200
@@ -49,7 +49,7 @@ def generateLemniscatePoints():
     #print "x array: %s"%(str(x))
     #print "z array: %s"%(str(z))
     axis_size = 1.2*ro
-    ax.plot(x, y, z, label='parametric curve')
+    ax.plot(x, y, z, label='parametric curve',marker='.',color='yellow', linestyle='dashed',markerfacecolor='blue')
     ax.legend()
     ax.set_xlabel('X')
     ax.set_xlim(-axis_size, axis_size)
