@@ -15,14 +15,23 @@
 #include <descartes_trajectory/axial_symmetric_pt.h>
 #include <descartes_trajectory/cart_trajectory_pt.h>
 #include <descartes_planner/dense_planner.h>
+#include <descartes_planner/sparse_planner.h>
+#include <visualization_msgs/MarkerArray.h>
+#include <eigen_conversions/eigen_msg.h>
 
 namespace plan_and_run
 {
 
 const std::string ROBOT_DESCRIPTION_PARAM = "robot_description";
-const std::string EXECUTE_TRAJECTORY_SERVICE = "/execute_kinematic_path";
+const std::string EXECUTE_TRAJECTORY_SERVICE = "execute_kinematic_path";
+const std::string VISUALIZE_TRAJECTORY_TOPIC = "visualize_trajectory_curve";
 const double SERVICE_TIMEOUT = 5.0f; // seconds
+const double ORIENTATION_INCREMENT = 0.5f;
 const double EPSILON = 0.0001f;
+const double AXIS_LINE_LENGHT = 0.01;
+const double AXIS_LINE_WIDTH = 0.002;
+const std::string PLANNER_ID = "RRTConnectkConfigDefault";
+const std::string HOME_POSITION_NAME = "home";
 
 typedef std::vector<descartes_core::TrajectoryPtPtr> DescartesTrajectory;
 
@@ -41,6 +50,7 @@ struct DemoConfiguration
   int num_points;
   int num_lemniscates;
   std::vector<double> center;
+  std::vector<double> seed_pose;
 };
 
 class DemoApplication
@@ -52,24 +62,36 @@ public:
   void loadParameters();
   void initMoveitClient();
   void initDescartes();
+  void moveHome();
   void generateTrajectory(DescartesTrajectory& traj);
-  void planPath(const DescartesTrajectory& input_traj,DescartesTrajectory& output_path);
+  void planPath(DescartesTrajectory& input_traj,DescartesTrajectory& output_path);
   void runPath(const DescartesTrajectory& path);
 
+
+  // utility methods
+  static descartes_core::TrajectoryPtPtr makeCartesianPoint(const Eigen::Affine3d& pose);
+
+  static bool createLemniscateCurve(double foci_distance, double sphere_radius,
+                                    int num_points, int num_lemniscates,
+                                    const Eigen::Vector3d& sphere_center,
+                                    EigenSTL::vector_Affine3d& poses);
 
 protected:
 
   void fromDescartesToMoveitTrajectory(const DescartesTrajectory& in_traj,
                                               trajectory_msgs::JointTrajectory& out_traj);
-  static descartes_core::TrajectoryPtPtr makeCartesianPoint(const Eigen::Affine3d& pose);
+  void publishPosesMarkers(const EigenSTL::vector_Affine3d& poses);
+
 
 protected:
 
+  ros::NodeHandle nh_;
   DemoConfiguration config_;
+  ros::Publisher marker_publisher_;
   ros::ServiceClient moveit_run_path_client_;
 
   descartes_core::RobotModelPtr robot_model_ptr_;
-  descartes_planner::DensePlanner planner_;
+  descartes_planner::SparsePlanner planner_;
 
 };
 

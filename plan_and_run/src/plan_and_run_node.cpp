@@ -25,9 +25,13 @@ int main(int argc,char** argv)
   // initializing moveit
   application.initMoveitClient();
 
+  // moving to home position
+  application.moveHome();
+
   // generating trajectory
   plan_and_run::DescartesTrajectory traj;
   application.generateTrajectory(traj);
+
 
   // planning robot path
   plan_and_run::DescartesTrajectory output_path;
@@ -38,6 +42,8 @@ int main(int argc,char** argv)
 
   // exiting ros node
   spinner.stop();
+
+
 
   return 0;
 }
