@@ -6,11 +6,11 @@
   <xacro:property name="flange_radius" value="0.04"/>
   <xacro:property name="flange_offset" value="0.08"/>
   <xacro:property name="tool_tip_width" value="0.005"/>
-  <xacro:property name="tool_tip_length" value="0.06"/>
+  <xacro:property name="tool_tip_length" value="0.08"/>
   <xacro:property name="tool_extent_width" value="0.04"/>
   <xacro:property name="tool_extent_length" value="0.02"/>
   <xacro:property name="tool_body_width" value="0.04"/>
-  <xacro:property name="tool_body_length" value="0.1"/>
+  <xacro:property name="tool_body_length" value="0.06"/>
   <xacro:property name="tool_length" value="${0.5*tool_body_length + tool_tip_length}"/>
 
   <!-- common stuff -->
