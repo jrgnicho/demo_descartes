@@ -45,15 +45,6 @@ void DemoApplication::loadParameters()
   else
   {
     ROS_ERROR_STREAM("Failed to load application parameters");
-
-    std::cout<<"\ngroup name: "<<config_.group_name<<
-        "\ntip_link: "<<config_.tip_link<<
-        "\nworld_frame "<<config_.world_frame<<
-        "\nbase_link "<<config_.base_link<<
-        "\ntrajectory/time_delay "<<config_.time_delay<<
-        "\ntrajectory/foci_distance "<<config_.foci_distance<<
-        "\ntrajectory/center/z "<<config_.center[2]<<
-        "\n";
     exit(-1);
   }
 
@@ -62,7 +53,7 @@ void DemoApplication::loadParameters()
 void DemoApplication::initDescartes()
 {
   // Robot Model initialization
-  robot_model_ptr_.reset(new descartes_moveit::MoveitStateAdapter());
+  robot_model_ptr_.reset(new ur5_demo_descartes::UR5RobotModel());
   if(robot_model_ptr_->initialize(ROBOT_DESCRIPTION_PARAM,
                                   config_.group_name,
                                   config_.world_frame,
@@ -403,14 +394,8 @@ void DemoApplication::runPath(const DescartesTrajectory& path)
   std::vector<double> seed_pose(robot_model_ptr_->getDOF()),start_pose;
   path[0]->getNominalJointPose(seed_pose,*robot_model_ptr_,start_pose);
 
-  std::cout<<"Path first joint point:\n";
-  for(unsigned int i = 0; i < start_pose.size();i++)
-  {
-      std::cout<<"j["<< i <<"]: "<<start_pose[i]<<"\n";
-  }
 
   // moving arm to joint goal
-
   move_group.setJointValueTarget(start_pose);
   move_group.setPlanningTime(10.0f);
   moveit_msgs::MoveItErrorCodes result = move_group.move();
@@ -420,13 +405,14 @@ void DemoApplication::runPath(const DescartesTrajectory& path)
     exit(-1);
   }
 
-
   // sending path to robot
   moveit_msgs::RobotTrajectory moveit_traj;
   fromDescartesToMoveitTrajectory(path,moveit_traj.joint_trajectory);
   moveit_msgs::ExecuteKnownTrajectory srv;
   srv.request.trajectory = moveit_traj;
   srv.request.wait_for_execution = true;
+
+  ROS_INFO_STREAM("Robot path sent for execution");
   if(moveit_run_path_client_.call(srv))
   {
     ROS_INFO_STREAM("Robot path execution completed");
