@@ -335,14 +335,6 @@ bool DemoApplication::createLemniscateCurve(double foci_distance, double sphere_
   return true;
 }
 
-descartes_core::TrajectoryPtPtr DemoApplication::makeCartesianPoint(const Eigen::Affine3d& pose)
-{
-  using namespace descartes_core;
-  using namespace descartes_trajectory;
-
-  return TrajectoryPtPtr( new AxialSymmetricPt(pose,0.1f,AxialSymmetricPt::FreeAxis::Z_AXIS) );
-}
-
 void DemoApplication::planPath(DescartesTrajectory& input_traj,DescartesTrajectory& output_path)
 {
   // modifying start and end points
@@ -393,7 +385,6 @@ void DemoApplication::runPath(const DescartesTrajectory& path)
   // creating goal joint pose to start of the path
   std::vector<double> seed_pose(robot_model_ptr_->getDOF()),start_pose;
   path[0]->getNominalJointPose(seed_pose,*robot_model_ptr_,start_pose);
-
 
   // moving arm to joint goal
   move_group.setJointValueTarget(start_pose);

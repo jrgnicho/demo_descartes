@@ -69,7 +69,6 @@ public:
 
 
   // utility methods
-  static descartes_core::TrajectoryPtPtr makeCartesianPoint(const Eigen::Affine3d& pose);
 
   static bool createLemniscateCurve(double foci_distance, double sphere_radius,
                                     int num_points, int num_lemniscates,
